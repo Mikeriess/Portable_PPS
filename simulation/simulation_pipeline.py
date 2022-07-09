@@ -160,7 +160,7 @@ def Generate_eventlog(SIM_SETTINGS):
     evlog_df['start_hour'] = evlog_df['start_datetime'].apply(lambda x: x.hour)
     
     if save_eventlog == True:
-        evlog_df.to_csv("A:/Process_sim/"+str(run)+"_Eventlog_"+process_entropy+"_"+process_type+".csv",
+        evlog_df.to_csv("simulated_evlogs/"+str(run)+"_Eventlog_"+process_entropy+"_"+process_type+".csv",
                         index=False)
 
     return evlog_df
