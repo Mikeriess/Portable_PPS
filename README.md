@@ -3,5 +3,5 @@
 
 # Usage
 
-- Make sure you have the libraries from portable_pps.yml
-- Or set up a new conda env using portable_pps.yml
+- Make sure you have the libraries from requirements.yml
+- Or set up a new conda env using requirements.yml
