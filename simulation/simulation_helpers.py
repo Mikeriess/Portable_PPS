@@ -40,3 +40,7 @@ def make_workweek(workweek):
              6.5, #sunday
              7.5]] 
     return W
+
+def flatten(listoflists):    
+    flattened_list = [item for sublist in listoflists for item in sublist]
+    return flattened_list
