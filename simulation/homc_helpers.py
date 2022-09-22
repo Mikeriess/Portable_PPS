@@ -123,3 +123,115 @@ def generate_condprob(parent, states):
         condprob = condprob + subset
     
     return condprob
+
+def create_homc(states, h0, h=2):
+        
+    from simulation.homc_helpers import cartesian_product, combine_to_list, modify_rules, generate_condprob
+    
+    ######################################
+    # P1
+    
+    #for each link
+    c = cartesian_product(states, states)
+    d = combine_to_list(c)
+    
+    #final steps
+    g = modify_rules(d, states)
+    p1_input = generate_condprob(g, states)
+    
+    ######################################
+    # P2
+    
+    #for each link
+    c = cartesian_product(states, states)
+    d = combine_to_list(c)
+    
+    e = cartesian_product(c, states)
+    f = combine_to_list(e)
+    
+    #final steps
+    g = modify_rules(f, states)
+    p2_input = generate_condprob(g, states)
+    
+    ######################################    
+    # P3
+    
+    #for each link
+    c = cartesian_product(states, states)
+    d = combine_to_list(c)
+    
+    e = cartesian_product(c, d)
+    f = combine_to_list(e)
+    
+    #final steps
+    g = modify_rules(f, states)
+    p3_input = generate_condprob(g, states)
+    
+    ######################################    
+    # P4
+    
+    #for each link
+    c = cartesian_product(states, states)
+    d = combine_to_list(c)
+    
+    e = cartesian_product(c, d)
+    f = combine_to_list(e)
+    
+    e = cartesian_product(f, states)
+    f = combine_to_list(e)
+    
+    #final steps
+    g = modify_rules(f, states)
+    p4_input = generate_condprob(g, states)
+
+    """
+    Input generated tables to pomegranate
+    """
+    from pomegranate import DiscreteDistribution, ConditionalProbabilityTable, MarkovChain
+    
+    if h == 1:
+        p0 = DiscreteDistribution(h0)
+        
+        p1 = ConditionalProbabilityTable(p1_input, [p0])
+        
+        HOMC = MarkovChain([p0, p1])
+        
+    if h == 2:
+        p0 = DiscreteDistribution(h0)
+        
+        p1 = ConditionalProbabilityTable(p1_input, [p0])
+        
+        p2 = ConditionalProbabilityTable(p2_input, [p1])
+        
+        HOMC = MarkovChain([p0, p1, p2])
+        
+    if h == 3:
+        
+        p0 = DiscreteDistribution(h0)
+        
+        p1 = ConditionalProbabilityTable(p1_input, [p0])
+        
+        p2 = ConditionalProbabilityTable(p2_input, [p1])
+        
+        p3 = ConditionalProbabilityTable(p3_input, [p2])
+        
+        HOMC = MarkovChain([p0, p1, p2, p3])
+        
+    if h == 4:
+         
+         p0 = DiscreteDistribution(h0)
+         
+         p1 = ConditionalProbabilityTable(p1_input, [p0])
+         
+         p2 = ConditionalProbabilityTable(p2_input, [p1])
+         
+         p3 = ConditionalProbabilityTable(p3_input, [p2])
+         
+         p4 = ConditionalProbabilityTable(p4_input, [p3])
+         
+         HOMC = MarkovChain([p0, p1, p2, p3, p4])
+         
+    if h > 4:
+        print("h > 4 not supported!")
+    
+    return HOMC
