@@ -44,7 +44,7 @@ run_settings = {"process_entropy":["min_entropy"], #,"med_entropy","max_entropy"
                 "number_of_traces":[100],
                 "statespace_size":[5],
                 "process_type":["memory"],        #,"memory"        
-                "process_memory":[5],
+                "process_memory":[3],
                 
                 "Fact1":[100],
                 "Fact2":[100],

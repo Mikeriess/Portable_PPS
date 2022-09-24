@@ -87,7 +87,8 @@ def modify_rules(parent, states):
     return condprob
 
 
-def generate_condprob(parent, states):
+def generate_condprob(parent, states, mode="max_entropy", settings={"med_ent_e_steps":5,
+                                                                    "med_ent_n_transitions":5}):
     import numpy as np
     #append probabilities to each row in the condition table
     condprob=[]
@@ -103,9 +104,32 @@ def generate_condprob(parent, states):
         #All rows, starting with E, should lead only to E
         #If a sequence has E at any point, every subsequent entry becomes E
         
-        #"""
-        #get list of probabilities for each state
-        vec = np.random.random(len(subset))
+        if mode=="max_entropy":
+            #get list of probabilities for each state
+            vec = np.random.random(len(subset))
+        
+        if mode=="med_entropy":
+            #get n random rows with probability > 0, and 0 for rest of the rows
+            vec = np.zeros(len(subset)).tolist()
+            
+            ids = list(range(0,len(vec)))
+            import random
+            selected = random.sample(ids, settings["med_ent_n_transitions"])
+            
+            for i in selected:
+                vec[i] = np.round(np.random.random(1)[0],decimals=8)
+                
+        if mode=="min_entropy":
+            #get 1 random row with probability == 1 and 0 for rest of the rows
+            vec = np.zeros(len(subset)).tolist()
+            
+            ids = list(range(0,len(vec)))
+            import random
+            selected = random.sample(ids, 1)[0]
+            
+            #set probability to 1
+            vec[selected] = 1
+            
         
         #normalize it
         vec = np.round(vec/np.sum(vec), decimals=5)
@@ -124,9 +148,11 @@ def generate_condprob(parent, states):
     
     return condprob
 
-def create_homc(states, h0, h=2):
+def create_homc(states, h0, h=2, mode="max_entropy", settings={"med_ent_e_steps":5,
+                                                               "med_ent_n_transitions":5}):
         
     from simulation.homc_helpers import cartesian_product, combine_to_list, modify_rules, generate_condprob
+    
     
     ######################################
     # P1
@@ -137,7 +163,7 @@ def create_homc(states, h0, h=2):
     
     #final steps
     g = modify_rules(d, states)
-    p1_input = generate_condprob(g, states)
+    p1_input = generate_condprob(g, states, mode, settings)
     
     ######################################
     # P2
@@ -151,7 +177,7 @@ def create_homc(states, h0, h=2):
     
     #final steps
     g = modify_rules(f, states)
-    p2_input = generate_condprob(g, states)
+    p2_input = generate_condprob(g, states, mode, settings)
     
     ######################################    
     # P3
@@ -165,7 +191,7 @@ def create_homc(states, h0, h=2):
     
     #final steps
     g = modify_rules(f, states)
-    p3_input = generate_condprob(g, states)
+    p3_input = generate_condprob(g, states, mode, settings)
     
     ######################################    
     # P4
@@ -182,7 +208,7 @@ def create_homc(states, h0, h=2):
     
     #final steps
     g = modify_rules(f, states)
-    p4_input = generate_condprob(g, states)
+    p4_input = generate_condprob(g, states, mode, settings)
 
     """
     Input generated tables to pomegranate
@@ -233,5 +259,6 @@ def create_homc(states, h0, h=2):
          
     if h > 4:
         print("h > 4 not supported!")
+        HOMC = 0
     
     return HOMC

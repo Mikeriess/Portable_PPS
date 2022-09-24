@@ -9,10 +9,7 @@ def Process_with_memory(D = ["a","b","c","d","e"],
                                     mode = ["min_entropy","max_entropy","med_entropy"][2], 
                                     num_traces=2, 
                                     sample_len=50,
-                                    K=2,
-                                    settings={"med_ent_e_steps":5,
-                                            "med_ent_n_transitions":5,
-                                            "med_ent_max_trials":100}):
+                                    K=2):
     import numpy as np
     import pandas as pd
     
@@ -20,6 +17,7 @@ def Process_with_memory(D = ["a","b","c","d","e"],
     
     # event-log container
     Theta = []
+    
     
     # Including absorption state
     D_abs = D.copy()
@@ -38,35 +36,12 @@ def Process_with_memory(D = ["a","b","c","d","e"],
     for i in range(0,len(D_abs)):
         P0.update({D_abs[i]:probabilities[i]})
     
-    
-    # def TransMatWrapper(D,mode):
-    #     if mode =="min_entropy":
-    #         P = Generate_transition_matrix_min_ent(D, P0)
-            
-    #     if mode =="max_entropy":
-    #         P = Generate_transition_matrix_max_ent(D)
-            
-    #     if mode =="med_entropy":
-    #         P = Generate_transition_matrix_med_ent(D,
-    #                                             #e_steps=settings["med_ent_e_steps"],
-    #                                             n_tranitions=settings["med_ent_n_transitions"],
-    #                                             limit_trials=settings["med_ent_max_trials"])
-    #     return P
 
-    print("mode",mode)
+    #create the markov chain
+    HOMC = create_homc(D_abs, P0, h=K)
 
-    if mode == "max_entropy":
-        #create the markov chain
-        HOMC = create_homc(D_abs, P0, h=K, mode="max_entropy", settings=settings)
-        
-    if mode == "med_entropy":
-        #create the markov chain
-        HOMC = create_homc(D_abs, P0, h=K, mode="med_entropy", settings=settings)
-        
-    if mode == "min_entropy":
-        #create the markov chain
-       HOMC = create_homc(D_abs, P0, h=K, mode="min_entropy", settings=settings)
     
+    Phi = HOMC
     
     ##### Part 2: Draw from the distributions
     for trace in list(range(0,num_traces)):

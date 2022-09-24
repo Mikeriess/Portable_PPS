@@ -1,6 +1,12 @@
 def make_D(statespace):
-    D=list(range(1, statespace + 1))
+    D=[]#list(range(1, statespace + 1))
     D = ["S"+str(s) for s in D]
+    
+    alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","w","x","y","z","æ","ø","å"]
+    
+    for i in range(1, statespace + 1):
+        D.append(alphabet[i])
+    
     return D
 
 def make_workweek(workweek):
