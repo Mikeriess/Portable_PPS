@@ -47,34 +47,38 @@ def Generate_eventlog(SIM_SETTINGS):
     """
     Simulation pipeline:
     """
+    #placeholder
+    max_trace_length = 0
     
-    # Generate an event-log
-    if process_type == "memory":
-        
-        if process_memory != "min_entropy":
+    #while loop to ensure that traces are more than just one event (which cannot be predicted from)
+    while max_trace_length < 3:
+
+        # Generate an event-log
+        if process_type == "memory":
+                    
             Theta, Phi = Process_with_memory(D = statespace, 
                                     mode = process_entropy, 
                                     num_traces=number_of_traces, 
                                     K=process_memory,
                                     settings=process_settings)
-        else:
+        
+        if process_type == "memoryless":
             Theta, Phi = Process_without_memory(D = statespace, 
-                                mode = process_entropy, 
-                                num_traces=number_of_traces,
-                                settings=process_settings)
-    
-    if process_type == "memoryless":
-        Theta, Phi = Process_without_memory(D = statespace, 
-                                mode = process_entropy, 
-                                num_traces=number_of_traces,
-                                settings=process_settings)
+                                    mode = process_entropy, 
+                                    num_traces=number_of_traces,
+                                    settings=process_settings)
+        
+        
+        # get the max trace length
+        max_trace_length = max(len(x) for x in Theta)
+        print("max_trace_length:",max_trace_length)
+        if max_trace_length < 2:
+            print("retrying..")
     
     # Generate time objects
     Y_container, Lambd, theta_time = Generate_time_variables(Theta = Theta,
                                                              D = statespace,
                                                              settings = time_settings)
-    # get the max trace length
-    max_trace_length = max(len(x) for x in Theta)
     
     #loop over all the traces
     for i in list(range(0,number_of_traces)):
